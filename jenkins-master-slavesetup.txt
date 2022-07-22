@@ -1,0 +1,86 @@
+ubuntu jenkins installation: 
+sudo apt-get update
+sudo apt install openjdk-11-jdk
+wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9B7D32F2D50582E6
+apt update
+apt install jenkins
+systemctl start jenkins
+cat /var/lib/jenkins/secrets/initialAdminPassword
+
+hostname
+hostname maste
+
+su jenkins
+ssh-keygen -t rsa
+
+visudo
+edit and add this line at 101 
+jenkins ALL=(ALL)       NOPASSWD:ALL
+
+vi /etc/ssh/sshd_config
+edit 65 line PasswordAuthentication yes
+
+
+systemctl restart sshd
+mkdir /home/jenkins
+sudo chmod -R 777 /home/jenkins
+ssh-copy-id jenkins@agentIP
+
+cd .ssh/
+cp known_hosts /var/lib/jenkins/.ssh/
+chmod 777 /var/lib/jenkins/.ssh/known_hosts
+
+" Agent: Take amazon linux "
+sudo amazon-linux-extras install java-openjdk11
+useradd jenkins
+passwd jenkins
+ssh-keygen -t rsa
+
+visudo
+edit and add this line at 101 
+jenkins ALL=(ALL)       NOPASSWD:ALL
+
+vi /etc/ssh/sshd_config
+edit 65 line PasswordAuthentication yes
+
+su jenkins
+ssh-keygen -t rsa
+
+
+
+
+
+Create two servers amazon linux
+
+yum install java-1.8.0-openjdk -y 
+
+Master side:
+# Installing Jenkins
+sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
+sudo rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+sudo yum -y install jenkins -y
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+
+sudo -i su -c "ssh-keygen -t rsa -f /root/.ssh/id_rsa -q -N \"\"" -m "root"
+sudo -i su -c "ssh-keygen -b 2048 -t rsa -f /var/lib/jenkins/.ssh/id_rsa -q -N \"\"" -m "jenkins"
+sudo sh -c "echo \"jenkins ALL=(ALL)       NOPASSWD:ALL\" >> /etc/sudoers"
+sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config
+sudo service sshd restart
+
+mkdir /home/jenkins
+
+sudo chmod -R 777 /home/jenkins
+
+#  slave config:
+useradd jenkins
+passwd jenkins
+yum install java-1.8.0-openjdk -y 
+sudo -i su -c "ssh-keygen -t rsa -f /root/.ssh/id_rsa -q -N \"\"" -m "root"
+sudo -i su -c "ssh-keygen -b 2048 -t rsa -f /var/lib/jenkins/.ssh/id_rsa -q -N \"\"" -m "jenkins"
+sudo sh -c "echo \"jenkins ALL=(ALL)       NOPASSWD:ALL\" >> /etc/sudoers"
+sudo sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config
+sudo service sshd restart
